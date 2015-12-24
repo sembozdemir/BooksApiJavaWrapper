@@ -107,8 +107,8 @@ public class BooksApi {
 
     public void searchBooksPrintType(String terms,
                                      String printType, int page, final ResultCallback callback) {
-        if (!printType.matches(KEY_BOOKS) && printType.matches(KEY_MAGAZINES)) {
-            Throwable t = new Throwable("orderBy parameter should be 'relevance' or 'newest'");
+        if (!printType.matches(KEY_BOOKS + "|" + KEY_MAGAZINES)) {
+            Throwable t = new Throwable("printType parameter should be 'books' or 'magazines'");
             callback.onFailure(t);
             return;
         }
@@ -140,7 +140,7 @@ public class BooksApi {
 
     public void searchBooksOrderBy(String terms,
                                    String orderBy, int page, final ResultCallback callback) {
-        if (!orderBy.matches(KEY_RELEVANCE) && orderBy.matches(KEY_NEWEST)) {
+        if (!orderBy.matches(KEY_RELEVANCE + "|" + KEY_NEWEST)) {
             Throwable t = new Throwable("orderBy parameter should be 'relevance' or 'newest'");
             callback.onFailure(t);
             return;
