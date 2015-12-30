@@ -5,22 +5,25 @@ import com.google.gson.GsonBuilder;
 import com.sembozdemir.booksapi.library.models.Item;
 import com.sembozdemir.booksapi.library.models.Result;
 
+import java.util.List;
+
 import retrofit.Call;
+import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
 public class BooksApi {
     public static final String BASE_URL = "https://www.googleapis.com/books/v1/";
-    private static final String KEY_RELEVANCE = "relevance";
-    private static final String KEY_NEWEST = "newest";
-    private static final String KEY_BOOKS = "books";
-    private static final String KEY_MAGAZINES = "magazines";
+    public static final String KEY_RELEVANCE = "relevance";
+    public static final String KEY_NEWEST = "newest";
+    public static final String KEY_BOOKS = "books";
+    public static final String KEY_MAGAZINES = "magazines";
     private BooksApiService booksApiService;
     private String apiKey;
     private int maxResults;
 
-    public BooksApi(BooksApiService booksApiService, String apiKey) {
+    private BooksApi(BooksApiService booksApiService, String apiKey) {
         this.booksApiService = booksApiService;
         this.apiKey = apiKey;
         maxResults = 10; // default
@@ -169,6 +172,11 @@ public class BooksApi {
         callback(callback, call);
     }
 
+    public void getBookById(String id, final ItemCallback callback) {
+        Call<Item> call = booksApiService.getBookById(id, apiKey);
+        callbackItem(callback, call);
+    }
+
     public void getBookForIsbn(String isbn, final ItemCallback callback) {
         String paramIsbn = checkParamTerms(isbn);
         paramIsbn = "isbn:" + paramIsbn;
@@ -180,6 +188,20 @@ public class BooksApi {
                 paramStartIndex,
                 apiKey);
         callback(callback, call);
+    }
+
+    private void callbackItem(final ItemCallback callback, final Call<Item> call) {
+        call.enqueue(new Callback<Item>() {
+            @Override
+            public void onResponse(Response<Item> response, Retrofit retrofit) {
+                callback.onSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                callback.onFailure(t);
+            }
+        });
     }
 
     private void callback(final ResultCallback callback, Call<Result> call) {
@@ -200,11 +222,11 @@ public class BooksApi {
         call.enqueue(new retrofit.Callback<Result>() {
             @Override
             public void onResponse(Response<Result> response, Retrofit retrofit) {
-                Item item = response.body().getItems().get(0);
-                if (item == null) {
-                    callback.onFailure(new Throwable("Item not founded"));
+                List<Item> items = response.body().getItems();
+                if (items != null && items.size() == 1) {
+                    callback.onSuccess(items.get(0));
                 } else {
-                    callback.onSuccess(item);
+                    callback.onFailure(new Throwable("Item not founded"));
                 }
             }
 

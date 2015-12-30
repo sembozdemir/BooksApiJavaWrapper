@@ -1,5 +1,6 @@
 package com.sembozdemir.booksapi.library;
 
+import com.sembozdemir.booksapi.library.models.Item;
 import com.sembozdemir.booksapi.library.models.Result;
 
 import retrofit.Call;
@@ -37,5 +38,9 @@ public interface BooksApiService {
                                          @Query("maxResults") String maxResults,
                                          @Query("startIndex") String startIndex,
                                          @Query("key") String apiKey);
+
+    @GET("volumes/{volumeId}")
+    Call<Item> getBookById(@Path("volumeId") String id,
+                           @Query("key") String apiKey);
 
 }
