@@ -1,4 +1,6 @@
 # BooksApiJavaWrapper
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-BooksApiJavaWrapper-green.svg?style=true)](https://android-arsenal.com/details/1/3018)
+
 It is a java wrapper for querying books information on Google Books Api.
 This library is using [RetroFit](http://square.github.io/retrofit/) and works asynchronously. You do not have to think about network connections or json parsing etc.
 
